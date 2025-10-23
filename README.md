@@ -32,17 +32,6 @@ El **Trono de las Mareas** ha sido profanado, y sólo tú, **Poseidón**, puedes
 Guía tu barco elegido, **el Navío de la Bendición**, a través de tormentas imposibles y enemigos divinos.  
 La victoria no se obtiene con espadas… sino con la **fuerza del océano**.
 
----
-
-## Controles (versión PC)
-
-| Acción | Tecla |
-|--------|-------|
-| Movimiento | **W / A / S / D** |
-| Disparar | **Click Izquierdo** |
-| Poder especial | **Espacio** |
-| Cambio de elemento | **Q / E** |
-| Pausa | **ESC** |
 
 ---
 
