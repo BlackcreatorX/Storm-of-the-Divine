@@ -24,6 +24,30 @@ Y tú, el titán que equilibra el poder entre el orden y la destrucción.
 - 🎵 **Banda sonora atmosférica**, con tambores de guerra y cantos del mar.
 
 ---
+##   Rubrica de calificación
+
+Este proyecto es con fin educativo asi que para el mismo el profesor a requerido los siguientes parámetros como rubrica obligatoria.
+
+**Mecanim y Blend Trees**
+
+- Configurar el Animator Controller del personaje principal.[❌]
+- Crear Blend Trees para transiciones suaves entre idle, caminar y correr.[❌]
+
+**Cinemáticas y Triggers de Animación**
+
+- Crea dos cinematicas utilizando Timeline, una de inicio del juego y otra durante[❌]
+- Integrar animaciones del personaje[❌]
+- Implementar triggers en la escena para activar la cinemática (ej. colisión con collider o entrada a zona).[❌]
+- Asegurarse de que el control del jugador se restaure al terminar la cinemática.[❌]
+
+**Sistema de cámaras con Cinemachine**
+
+- Implementar Cinemachine Virtual Camera que siga al jugador durante la exploración.[❌]
+- Configurar transiciones entre cámaras usando Cinemachine Brain[❌]
+- Ajustar parámetros de Cinemachine para que las cámaras tengan movimientos suaves y encuadres correctos.[❌]
+- Integrar cámaras con cinemáticas y animaciones existentes, asegurando fluidez.[❌]
+
+---
 
 ##  Historia
 
