@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using UnityEditor;
 using UnityEngine;
+using Unity.Cinemachine;
 
 public class BarcoController : MonoBehaviour
 {
@@ -21,9 +23,17 @@ public class BarcoController : MonoBehaviour
     public Transform objetoMasCercano;
     public Vector2 puntoImpacto;
 
+    [Header("Cámaras Cinemachine")]
+    [SerializeField] private CinemachineCamera camaraMuerte; // Cámara 1 - Asignar en Inspector
+    [SerializeField] private CinemachineCamera camaraPrincipal; // Cámara 2 - Asignar en Inspector
+
+    [Header("Configuración de muerte")]
+    [SerializeField] private float velocidadRotacionMuerte = 720f; // Grados por segundo
+
     private float tiempoUltimoDisparo = 0f;
     private bool puedeDisparar = true;
-  [SerializeField] private Rigidbody2D rb;
+    private bool estaMuriendo = false;
+    [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Animator animator;
 
     [Header("Movimiento inicial")]
@@ -38,17 +48,17 @@ public class BarcoController : MonoBehaviour
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        //  Calcular dirección hacia el centro (0,0)
+        // Calcular dirección hacia el centro (0,0)
         Vector2 direccionCentro = ((Vector2)Vector2.zero - rb.position).normalized;
 
         // Aplicar empujón inicial
         rb.AddForce(direccionCentro * fuerzaInicial, ForceMode2D.Impulse);
     }
 
-
-
     private void Update()
     {
+        if (estaMuriendo) return;
+
         DetectarObjetoMasCercano();
         ActualizarAnimacionDireccion();
 
@@ -121,37 +131,91 @@ public class BarcoController : MonoBehaviour
     public void RecibirDano(int dano)
     {
         Vida -= dano;
-        if (Vida <= 0)
+        if (Vida <= 0 && !estaMuriendo)
             Morir();
     }
 
-
     private void DropPowerUp()
-{
-    // Verificar si hay drops disponibles
-    if (drops != null && drops.Length > 0)
     {
-        // Escoger un prefab aleatoriamente de la lista de drops
-        GameObject drop = drops[UnityEngine.Random.Range(0, drops.Length)];
+        // Verificar si hay drops disponibles
+        if (drops != null && drops.Length > 0)
+        {
+            // Escoger un prefab aleatoriamente de la lista de drops
+            GameObject drop = drops[UnityEngine.Random.Range(0, drops.Length)];
 
-        // Instanciar el prefab en la posición del barco
-        Instantiate(drop, transform.position, Quaternion.identity);
-        
-        Debug.Log($"{gameObject.name} soltó un power-up: {drop.name}");
+            // Instanciar el prefab en la posición del barco
+            Instantiate(drop, transform.position, Quaternion.identity);
+            
+            Debug.Log($"{gameObject.name} soltó un power-up: {drop.name}");
+        }
+        else
+        {
+            Debug.LogWarning("No hay drops disponibles o la lista está vacía");
+        }
     }
-    else
-    {
-        Debug.LogWarning("No hay drops disponibles o la lista está vacía");
-    }
-}
 
     private void Morir()
     {
-         DropPowerUp();
+        estaMuriendo = true;
+        StartCoroutine(SequenciaMuerte());
+    }
 
-        Debug.Log($"{gameObject.name} ha sido destruido!");
-        Destroy(gameObject);
+    private IEnumerator SequenciaMuerte()
+    {
+        // Paso 1: Configurar y activar la cámara de muerte
+        ConfigurarCamaraMuerte();
         
+        // Paso 2: Rotación rápida durante 2 segundos
+        float tiempoInicio = Time.time;
+        float duracionRotacion = 2f;
+        
+        while (Time.time - tiempoInicio < duracionRotacion)
+        {
+            // Rotar el barco rápidamente
+            transform.Rotate(0, 0, velocidadRotacionMuerte * Time.deltaTime);
+            yield return null;
+        }
+        
+        // Paso 3: Soltar power-up
+        DropPowerUp();
+        
+        Debug.Log($"{gameObject.name} ha sido destruido!");
+        
+        // Paso 4: Regresar a la cámara principal antes de destruir el objeto
+        CambiarCamara(camaraPrincipal);
+        
+        // Paso 5: Destruir el barco
+        Destroy(gameObject);
+    }
+
+    private void ConfigurarCamaraMuerte()
+    {
+        if (camaraMuerte != null)
+        {
+            // Configurar el target de la cámara de muerte para que siga a este barco
+            camaraMuerte.Follow = transform;
+            camaraMuerte.LookAt = transform;
+            
+            // Activar la cámara de muerte
+            CambiarCamara(camaraMuerte);
+        }
+        else
+        {
+            Debug.LogWarning("Cámara de muerte no asignada en el Inspector");
+        }
+    }
+
+    private void CambiarCamara(CinemachineCamera camaraActivar)
+    {
+        // Desactivar todas las cámaras primero
+        if (camaraMuerte != null) camaraMuerte.Priority = 0;
+        if (camaraPrincipal != null) camaraPrincipal.Priority = 0;
+        
+        // Activar la cámara deseada
+        if (camaraActivar != null)
+        {
+            camaraActivar.Priority = 10;
+        }
     }
 
     private void ActualizarAnimacionDireccion()
@@ -169,31 +233,28 @@ public class BarcoController : MonoBehaviour
         }
     }
 
-   void OnTriggerEnter2D(Collider2D collider)
-   {
-       switch (collider.gameObject.tag)
-       {
-           case "Obstacle":
-               Morir();
-               break;
-        case "DanoZone":
-            Vida -= 10;         
-            break;
-            
-        case "HPickup":
-            Vida += 20;
-            Destroy(collider.gameObject);
-            break;
-            
-        case "DanoPickup":
-            Dano += 5;
-            Destroy(collider.gameObject);
-            break;
-            
-        case "FireRatePickup":
-            CadenciaDisparo = Mathf.Max(0.1f, CadenciaDisparo - 0.2f);
-            Destroy(collider.gameObject);
-            break;
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        switch (collider.gameObject.tag)
+        {
+            case "Obstacle":
+                Morir();
+                break;
+            case "DanoZone":
+                Vida -= 10;         
+                break;
+            case "HPickup":
+                Vida += 20;
+                Destroy(collider.gameObject);
+                break;
+            case "DanoPickup":
+                Dano += 5;
+                Destroy(collider.gameObject);
+                break;
+            case "FireRatePickup":
+                CadenciaDisparo = Mathf.Max(0.1f, CadenciaDisparo - 0.2f);
+                Destroy(collider.gameObject);
+                break;
+        }
     }
-}
 }
