@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 3
   tags:
   - Enemy
+  - Wave
+  - Obstacle
+  - HPickup
+  - DanoPickup
+  - FireRatePickup
   layers:
   - Default
   - TransparentFX
