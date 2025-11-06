@@ -47,6 +47,15 @@ Este proyecto es con fin educativo asi que para el mismo el profesor a requerido
 - Ajustar parámetros de Cinemachine para que las cámaras tengan movimientos suaves y encuadres correctos.[✔️]
 - Integrar cámaras con cinemáticas y animaciones existentes, asegurando fluidez.[✔️]
 
+
+**TODO**
+- Colocar Sprites de items y obstaculos
+- Colocar shaders y vfx
+- Colocar Sonido
+- Menu
+- Cambiar placeholder de holas y viento por sistemas de particulas con colision
+- ui/ux
+
 ---
 
 ##  Historia
