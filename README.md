@@ -35,10 +35,10 @@ Este proyecto es con fin educativo asi que para el mismo el profesor a requerido
 
 **Cinemáticas y Triggers de Animación**
 
-- Crea dos cinematicas utilizando Timeline, una de inicio del juego y otra durante[❌]
+- Crea dos cinematicas utilizando Timeline, una de inicio del juego y otra durante[✔️]
 - Integrar animaciones del personaje[✔️]
-- Implementar triggers en la escena para activar la cinemática (ej. colisión con collider o entrada a zona).[❌]
-- Asegurarse de que el control del jugador se restaure al terminar la cinemática.[❌]
+- Implementar triggers en la escena para activar la cinemática (ej. colisión con collider o entrada a zona).[NA]
+- Asegurarse de que el control del jugador se restaure al terminar la cinemática.[✔️]
 
 **Sistema de cámaras con Cinemachine**
 
